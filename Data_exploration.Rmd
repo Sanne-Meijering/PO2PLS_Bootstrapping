@@ -29,3 +29,5 @@ vars <- apply(X17, 2, var)
 head(as.data.frame(vars))
 ```
 
+
+Implementing bugs as fast as I can
