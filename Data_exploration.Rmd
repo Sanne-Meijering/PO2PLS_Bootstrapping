@@ -1,0 +1,31 @@
+---
+title: "Data Exploration"
+output: html_notebook
+---
+
+In this file, we explore the atherosclerosis data
+
+
+```{r}
+# Get packages
+library(OmicsPLS)
+library(data.table)
+
+# Set seed
+set.seed(31*12*2016)
+
+# Load the chromosome 17 data
+setwd("C:/Users/rikul/Documents/Thesis_data")
+load("Xy_chr17.Rdata")
+y <- as.data.frame(y)
+X17 <- as.data.frame(X)
+```
+
+First, we'll make some graphs
+
+```{r}
+hist(colMeans(X17), xlab = "Mean", main="Histogram of means per gene")
+vars <- apply(X17, 2, var)
+head(as.data.frame(vars))
+```
+
