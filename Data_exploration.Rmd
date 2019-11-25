@@ -1,31 +1,152 @@
 ---
 title: "Data Exploration"
-output: html_notebook
+output:
+  html_document: default
+  html_notebook: default
 ---
 
 In this file, we explore the atherosclerosis data
 
+# Setting up
 
 ```{r}
 # Get packages
 library(OmicsPLS)
 library(data.table)
-
+library(PO2PLS)
 # Set seed
 set.seed(31*12*2016)
 
 # Load the chromosome 17 data
 setwd("C:/Users/rikul/Documents/Thesis_data")
 load("Xy_chr17.Rdata")
-y <- as.data.frame(y)
-X17 <- as.data.frame(X)
+
+# Draw subjects
+sample <- sort(sample(1:nrow(X), 1000))
+
+# Filter subjects
+Xtrain <- X[sample,]
+ytrain <- y[sample,]
 ```
+
+# Data exploration
 
 First, we'll make some graphs
 
 ```{r}
-hist(colMeans(X17), xlab = "Mean", main="Histogram of means per gene")
-vars <- apply(X17, 2, var)
-head(as.data.frame(vars))
+# Make histogram of means
+hist(colMeans(Xtrain), xlab = "Mean", main="Histogram of means per gene")
+# Calculate variances
+vars <- apply(Xtrain, 2, var)
+plot(vars, xlab = "Variance", main="Histogram of variance per gene")
 ```
 
+# Time tests
+
+```{r}
+# Test time required for PO2PLS
+
+time_steps <- seq(5, 50, 5)
+time_user <- rep(0,10)
+time_sys <- rep(0,10)
+time_tot <- rep(0,10)
+
+for(i in 1:10){
+ time <- system.time(PO2PLS(Xtrain, ytrain, 2, 1, 1, steps=time_steps[i]))
+ time_user[i] <- time[1]
+ time_sys[i] <- time[2]
+ time_tot[i] <- time[3]
+}
+```
+
+```{r}
+# Test effect of halving the number of genes
+
+time0.5_user <- rep(0,10)
+time0.5_sys <- rep(0,10)
+time0.5_tot <- rep(0,10)
+
+for(i in 1:10){
+ time <- system.time(PO2PLS(Xtrain[,1:3356], ytrain, 2, 1, 1, steps=time_steps[i]))
+ time0.5_user[i] <- time[1]
+ time0.5_sys[i] <- time[2]
+ time0.5_tot[i] <- time[3]
+}
+```
+
+```{r}
+# Test effect of halving the number of outcomes
+
+timey_user <- rep(0,10)
+timey_sys <- rep(0,10)
+timey_tot <- rep(0,10)
+
+for(i in 1:10){
+ time <- system.time(PO2PLS(Xtrain, ytrain[,1:4], 2, 1, 1, steps=time_steps[i]))
+ timey_user[i] <- time[1]
+ timey_sys[i] <- time[2]
+ timey_tot[i] <- time[3]
+}
+
+```
+
+```{r}
+# Test effect of using only joined components
+
+timejonly_user <- rep(0,10)
+timejonly_sys <- rep(0,10)
+timejonly_tot <- rep(0,10)
+
+for(i in 1:10){
+ time <- system.time(PO2PLS(Xtrain, ytrain, 2, 0, 0, steps=time_steps[i]))
+ timejonly_user[i] <- time[1]
+ timejonly_sys[i] <- time[2]
+ timejonly_tot[i] <- time[3]
+}
+
+```
+
+```{r}
+# Test effect of using more orthogonal components
+
+timemoreOrt_user <- rep(0,10)
+timemoreOrt_sys <- rep(0,10)
+timemoreOrt_tot <- rep(0,10)
+
+for(i in 1:10){
+ time <- system.time(PO2PLS(Xtrain, ytrain, 2, 5, 5, steps=time_steps[i]))
+ timemoreOrt_user[i] <- time[1]
+ timemoreOrt_sys[i] <- time[2]
+ timemoreOrt_tot[i] <- time[3]
+}
+
+```
+
+```{r}
+# Test effect of halving the number of people
+
+timep_user <- rep(0,10)
+timep_sys <- rep(0,10)
+timep_tot <- rep(0,10)
+
+for(i in 1:10){
+ time <- system.time(PO2PLS(Xtrain[1:500,], ytrain[1:500,], 2, 1, 1, steps=time_steps[i]))
+ timep_user[i] <- time[1]
+ timep_sys[i] <- time[2]
+ timep_tot[i] <- time[3]
+}
+
+```
+
+
+
+```{r}
+# Plot results
+
+plot(time_steps, time_tot, xlim=c(4,51), ylim=c(0,75), type="l")
+lines(time_steps, time0.5_tot, col="red")
+lines(time_steps, timey_tot, col="blue")
+lines(time_steps, timejonly_tot, col="green")
+lines(time_steps, timemoreOrt_tot, col="purple")
+lines(time_steps, timep_tot, col="grey")
+```

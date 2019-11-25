@@ -1,0 +1,170 @@
+---
+title: "GWAS"
+author: "Sanne"
+date: "November 11, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Setup
+
+```{r}
+# Set seed
+set.seed(31*12*2016)
+
+# Load the chromosome 17 data
+setwd("C:/Users/rikul/Documents/Thesis_data")
+load("Xy_chr17.Rdata")
+
+# Draw subjects
+sample <- sort(sample(1:nrow(X), 1000))
+
+# Filter subjects
+Xtrain <- X[sample,]
+ytrain <- y[sample,]
+```
+
+##GWAS
+
+#Calcification
+
+```{r}
+# Create p-value and correlation graphs
+Calc_p <- rep(0, ncol(Xtrain))
+Calc_r <- rep(0, ncol(Xtrain))
+
+# Run GWAS for calcification
+for (i in 1: ncol(Xtrain)){
+  corr <- cor.test(Xtrain[,i], ytrain[,1])
+  Calc_p[i] <- corr$p.value
+  Calc_r[i] <- corr$estimate
+}
+
+# Plot results
+plot(-log(Calc_p), ylim=c(0,14))
+# Draw line for p-value, correct for multiple testing
+abline(h=-log(0.05/6712))
+```
+
+#Collagen
+
+```{r}
+# Create p-value and correlation graphs
+Col_p <- rep(0, ncol(Xtrain))
+Col_r <- rep(0, ncol(Xtrain))
+
+# Run GWAS for calcification
+for (i in 1: ncol(Xtrain)){
+  corr <- cor.test(Xtrain[,i], ytrain[,2])
+  Col_p[i] <- corr$p.value
+  Col_r[i] <- corr$estimate
+}
+
+# Plot results
+plot(-log(Col_p), ylim=c(0,14))
+# Draw line for p-value, correct for multiple testing
+abline(h=-log(0.05/6712))
+```
+
+#Fat
+
+```{r}
+# Create p-value and correlation graphs
+Fat_p <- rep(0, ncol(Xtrain))
+Fat_r <- rep(0, ncol(Xtrain))
+
+# Run GWAS for calcification
+for (i in 1: ncol(Xtrain)){
+  corr <- cor.test(Xtrain[,i], ytrain[,3])
+  Fat_p[i] <- corr$p.value
+  Fat_r[i] <- corr$estimate
+}
+
+# Plot results
+plot(-log(Fat_p), ylim=c(0,14))
+# Draw line for p-value, correct for multiple testing
+abline(h=-log(0.05/6712))
+```
+
+#IPH
+
+```{r}
+# Create p-value and correlation graphs
+IPH_p <- rep(0, ncol(Xtrain))
+IPH_r <- rep(0, ncol(Xtrain))
+
+# Run GWAS for calcification
+for (i in 1: ncol(Xtrain)){
+  corr <- cor.test(Xtrain[,i], ytrain[,4])
+  IPH_p[i] <- corr$p.value
+  IPH_r[i] <- corr$estimate
+}
+
+# Plot results
+plot(-log(IPH_p), ylim=c(0,14))
+# Draw line for p-value, correct for multiple testing
+abline(h=-log(0.05/6712))
+```
+
+#Macrophages
+
+```{r}
+# Create p-value and correlation graphs
+Mac_p <- rep(0, ncol(Xtrain))
+Mac_r <- rep(0, ncol(Xtrain))
+
+# Run GWAS for calcification
+for (i in 1: ncol(Xtrain)){
+  corr <- cor.test(Xtrain[,i], ytrain[,5])
+  Mac_p[i] <- corr$p.value
+  Mac_r[i] <- corr$estimate
+}
+
+# Plot results
+plot(-log(Mac_p), ylim=c(0,14))
+# Draw line for p-value, correct for multiple testing
+abline(h=-log(0.05/6712))
+```
+
+#SMC
+
+```{r}
+# Create p-value and correlation graphs
+SMC_p <- rep(0, ncol(Xtrain))
+SMC_r <- rep(0, ncol(Xtrain))
+
+# Run GWAS for calcification
+for (i in 1: ncol(Xtrain)){
+  corr <- cor.test(Xtrain[,i], ytrain[,6])
+  SMC_p[i] <- corr$p.value
+  SMC_r[i] <- corr$estimate
+}
+
+# Plot results
+plot(-log(SMC_p), ylim=c(0,14))
+# Draw line for p-value, correct for multiple testing
+abline(h=-log(0.05/6712))
+```
+
+#Average vessel density
+
+```{r}
+# Create p-value and correlation graphs
+VD_p <- rep(0, ncol(Xtrain))
+VD_r <- rep(0, ncol(Xtrain))
+
+# Run GWAS for calcification
+for (i in 1: ncol(Xtrain)){
+  corr <- cor.test(Xtrain[,i], ytrain[,7])
+  VD_p[i] <- corr$p.value
+  VD_r[i] <- corr$estimate
+}
+
+# Plot results
+plot(-log(VD_p), ylim=c(0,14))
+# Draw line for p-value, correct for multiple testing
+abline(h=-log(0.05/6712))
+```
