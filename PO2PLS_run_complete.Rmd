@@ -29,8 +29,9 @@ sample <- sort(sample(1:np, 1000))
 # Finding the optimal number of components
 ```{r}
 dim_names <- list(chromosomes=1:22, components=c("r", "rx", "ry"))
-best_comp <- matrix(rep(0, 22*3), nrow = 22, ncol = 3, dimnames = dim_names)
-for(i in 1:22){
+best_compML <- matrix(rep(0, 22*3), nrow = 22, ncol = 3, dimnames = dim_names)
+likeli_array <- list()
+for(i in 20:22){
   # Load the chromosome data
   setwd("C:/Users/rikul/Documents/Thesis_data")
   filename <- paste("Xy_chr", i, ".Rdata", sep="")
@@ -43,9 +44,12 @@ for(i in 1:22){
   ytrain <- y[sample,]
   
   # Cross-validate (O2PLS function, replace with PO2PLs version)
-  best_comp[i,] <- max_logl_PO2PLS(Xtrain, ytrain, 7, 7, 7)$maximum[1,]
+  res <- max_logl_PO2PLS(Xtrain, ytrain, 7, 6, 6)
+  best_compML[i,] <- res$maximum[1,]
+  likeli_array[[i]] <- res$likelihood_array
 }
-save(best_comp,"best_comp", file="Components.Rdata")
+save(best_compML, "best_compML", file="Components.Rdata")
+save(likeli_array, "likeli_array", file="Components_array.Rdata")
 ```
 
 
@@ -66,28 +70,18 @@ for(i in 1:22){
   # Run PO2PLS
   comps <- best_comp[i,]
   Psteps2000 <- PO2PLS(as.matrix(Xtrain), as.matrix(ytrain), comps[1], comps[2], comps[3], steps=2000, init_param = "random")
-  output_file <- paste("PO2PLS_chr", i, ".Rdata", sep="")
+  output_file <- paste("PO2PLS_ML_chr", i, ".Rdata", sep="")
   save(Psteps2000, "Psteps2000", file=output_file)
 }
 ```
 
 
-
-
-
-
-# Running PO2PLS
-
-```{r}
-```
-
-
-```{r}
+#```{r}
 summary(Psteps2000_x1)
 param <- Psteps2000_x1$parameters
 ```
 
-```{r}
+#```{r}
 # Plot results
 #plot(param$W[,1], param$W[,2], xlab="First component", ylab="Second component")
 #abline(h=0)
@@ -109,7 +103,7 @@ sd(colSums(Xtrain))/sqrt(ncol(Xtrain))
 
 colnames(Xtrain)[3350:3400]
 ```
-```{r}
+#```{r}
 plot(param$W[,1], ylab="First component", main="Genes")
 abline(h=0)
 #plot(param$W[,2], ylab="Second component", main="Genes")
@@ -120,7 +114,7 @@ abline(h=0)
 #abline(h=0)
 ```
 
-```{r}
+#```{r}
 # Compare with O2PLS results
 O2PLS_res <- o2m(Xtrain, ytrain, 1, 3, 4)
 summary(O2PLS_res)
